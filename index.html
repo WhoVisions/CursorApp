@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="CursorApp – a sleek, minimal starter with interactive UI and theme toggle." />
     <title>CursorApp</title>
     <link rel="stylesheet" href="src/styles.css" />
   </head>
@@ -30,7 +31,7 @@
           <p class="tagline">A sleek starter. Move your mouse and try the controls.</p>
           <div class="hero-actions">
             <button id="changeBtn" class="btn">Change cursor</button>
-            <p id="status">Cursor: default</p>
+            <p id="status" role="status" aria-live="polite">Cursor: default</p>
           </div>
         </div>
       </section>
@@ -69,6 +70,12 @@
       </button>
     </nav>
 
-    <script src="src/main.js"></script>
+    <noscript>
+      <div style="margin:16px; padding:12px; border:1px solid #ccc; border-radius:8px; background:#fff; color:#111;">
+        JavaScript is disabled. Enable it to use interactive features.
+      </div>
+    </noscript>
+
+    <script src="src/main.js" defer></script>
   </body>
 </html>
