@@ -24,6 +24,21 @@ npx serve . -l 5000
 
 The app will be available at http://localhost:5000 when using the command above.
 
+### Alternate start
+
+If `npx` is restricted by your environment, install `serve` globally and use the alternate script:
+
+```powershell
+npm i -g serve
+serve . -l 5000
+```
+
+Then open:
+
+```powershell
+start http://localhost:5000
+```
+
 ## Notes
 
 This is a lightweight scaffold. If you want a full framework (React/Vite/Next) I can add that next.

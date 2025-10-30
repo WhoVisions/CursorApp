@@ -5,6 +5,7 @@
   "main": "index.html",
   "scripts": {
     "start": "npx serve . -l 5000",
+    "start:alt": "serve . -l 5000",
     "test": "echo \"No tests configured\" && exit 0"
   },
   "author": "WhoVisions",
