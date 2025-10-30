@@ -1,0 +1,12 @@
+{
+  "name": "cursorapp",
+  "version": "0.1.0",
+  "description": "A small starter scaffold for CursorApp",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve . -l 5000",
+    "test": "echo \"No tests configured\" && exit 0"
+  },
+  "author": "WhoVisions",
+  "license": "MIT"
+}
