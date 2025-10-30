@@ -3,20 +3,58 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>CursorApp</title>
+    <title>Business Opportunity Scanner</title>
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
     <div id="app" class="app">
       <header>
-        <h1>CursorApp</h1>
-        <p class="tagline">A tiny starter app — move your mouse to see the demo.</p>
+        <h1>📰 Business Opportunity Scanner</h1>
+        <p class="tagline">Scan news for emerging business opportunities</p>
       </header>
 
-      <main>
-        <button id="changeBtn" class="btn">Change cursor</button>
-        <p id="status">Cursor: default</p>
-      </main>
+      <div class="controls">
+        <div class="filter-group">
+          <label>News Scope:</label>
+          <div class="filters">
+            <button class="filter-btn active" data-scope="local">Local</button>
+            <button class="filter-btn active" data-scope="national">National</button>
+            <button class="filter-btn active" data-scope="international">International</button>
+          </div>
+        </div>
+        <button id="scanBtn" class="btn btn-primary">
+          <span class="btn-text">🔍 Scan News</span>
+          <span class="btn-loader" style="display: none;">⏳ Scanning...</span>
+        </button>
+      </div>
+
+      <div id="apiKeySection" class="api-key-section">
+        <div class="api-key-warning">
+          <strong>📋 Setup Required:</strong>
+          <p>To use this app, you need a free NewsAPI key from <a href="https://newsapi.org/register" target="_blank">newsapi.org</a></p>
+          <input 
+            type="text" 
+            id="apiKeyInput" 
+            placeholder="Enter your NewsAPI key here"
+            class="api-key-input"
+          />
+          <button id="saveApiKey" class="btn btn-secondary">Save API Key</button>
+        </div>
+      </div>
+
+      <div id="status" class="status"></div>
+
+      <div id="results" class="results">
+        <div id="opportunities" class="opportunities-section">
+          <h2>💼 Business Opportunities</h2>
+          <div id="opportunitiesList" class="opportunities-list"></div>
+        </div>
+        
+        <div id="newsArticles" class="news-section">
+          <h2>📰 Recent News</h2>
+          <div id="articlesList" class="articles-list"></div>
+        </div>
+      </div>
     </div>
 
     <script src="src/main.js"></script>
