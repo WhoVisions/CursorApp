@@ -2,59 +2,265 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Business Opportunity Scanner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpportunityRadar — AI & News Business Opportunity Scanner</title>
+    <meta name="description" content="Scan multi-source news, market signals, and industry breakthroughs to discover actionable business opportunities." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
-    <div id="app" class="app">
-      <header>
-        <h1>📰 Business Opportunity Scanner</h1>
-        <p class="tagline">Scan news for emerging business opportunities</p>
-      </header>
-
-      <div class="controls">
-        <div class="filter-group">
-          <label>News Scope:</label>
-          <div class="filters">
-            <button class="filter-btn active" data-scope="local">Local</button>
-            <button class="filter-btn active" data-scope="national">National</button>
-            <button class="filter-btn active" data-scope="international">International</button>
+    <div id="app" class="app-container">
+      <!-- Top Navigation & Header -->
+      <header class="app-header">
+        <div class="brand-group">
+          <div class="brand-logo">
+            <span class="logo-icon">⚡</span>
+          </div>
+          <div>
+            <div class="brand-title">
+              <h1>Opportunity<span class="gradient-text">Radar</span></h1>
+              <span class="badge badge-pulse">v2.0 Pro</span>
+            </div>
+            <p class="tagline">Autonomous Market Signal & Business Opportunity Intelligence Engine</p>
           </div>
         </div>
-        <button id="scanBtn" class="btn btn-primary">
-          <span class="btn-text">🔍 Scan News</span>
-          <span class="btn-loader" style="display: none;">⏳ Scanning...</span>
-        </button>
-      </div>
 
-      <div id="apiKeySection" class="api-key-section">
-        <div class="api-key-warning">
-          <strong>📋 Setup Required:</strong>
-          <p>To use this app, you need a free NewsAPI key from <a href="https://newsapi.org/register" target="_blank">newsapi.org</a></p>
+        <div class="header-actions">
+          <div class="source-status-pill" id="sourceStatusPill" title="Feed Source Connection">
+            <span class="status-dot online"></span>
+            <span id="sourceStatusText">Live Feed Online (Zero Key Req.)</span>
+          </div>
+          <button id="quickSettingsBtn" class="btn btn-icon" title="Configure API Keys & Feeds">⚙️</button>
+        </div>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs">
+        <button class="tab-btn active" data-tab="radar">
+          <span class="tab-icon">🎯</span> Opportunity Radar <span class="tab-counter" id="radarCount">0</span>
+        </button>
+        <button class="tab-btn" data-tab="analytics">
+          <span class="tab-icon">📊</span> Market Pulse
+        </button>
+        <button class="tab-btn" data-tab="live-feed">
+          <span class="tab-icon">📰</span> Raw News Feed <span class="tab-counter" id="articlesCount">0</span>
+        </button>
+        <button class="tab-btn" data-tab="saved">
+          <span class="tab-icon">⭐</span> Saved Blueprints <span class="tab-counter" id="savedCount">0</span>
+        </button>
+      </nav>
+
+      <!-- Main Controls & Command Bar -->
+      <section class="command-bar">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
           <input 
             type="text" 
-            id="apiKeyInput" 
-            placeholder="Enter your NewsAPI key here"
-            class="api-key-input"
+            id="searchInput" 
+            placeholder="Search signals by keyword, sector (AI, Energy, Health, Fintech), or business model..." 
           />
-          <button id="saveApiKey" class="btn btn-secondary">Save API Key</button>
+          <button id="clearSearch" class="btn-clear" style="display: none;">✕</button>
+        </div>
+
+        <div class="action-row">
+          <div class="scope-selectors">
+            <label class="section-label">Feed Scope:</label>
+            <div class="pill-group">
+              <button class="pill-btn active" data-scope="all">All Sources</button>
+              <button class="pill-btn" data-scope="tech">Tech & AI</button>
+              <button class="pill-btn" data-scope="business">Markets & Finance</button>
+              <button class="pill-btn" data-scope="global">Global Macro</button>
+              <button class="pill-btn" data-scope="local">Local & Industry</button>
+            </div>
+          </div>
+
+          <div class="category-selectors">
+            <label class="section-label">Archetype:</label>
+            <select id="archetypeFilter" class="select-input">
+              <option value="all">All Archetypes</option>
+              <option value="B2B SaaS">B2B SaaS / Tooling</option>
+              <option value="AI Workflow">AI Workflow / Agents</option>
+              <option value="Arbitrage & Supply">Arbitrage & Supply Chain</option>
+              <option value="Regulatory Tech">Regulatory & Compliance</option>
+              <option value="Consumer Product">Consumer & Creator Economy</option>
+              <option value="Service Agency">High-Ticket Agency / Consulting</option>
+            </select>
+          </div>
+
+          <button id="scanBtn" class="btn btn-primary btn-glow">
+            <span class="btn-icon">⚡</span>
+            <span class="btn-text">Execute Scan</span>
+            <span class="btn-loader" style="display: none;"><span class="spinner"></span> Scanning...</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Global Notification Status -->
+      <div id="statusAlert" class="status-alert" style="display: none;">
+        <span id="statusIcon" class="status-alert-icon">ℹ️</span>
+        <span id="statusMsg" class="status-alert-msg"></span>
+      </div>
+
+      <!-- TAB 1: Opportunity Radar -->
+      <main id="tab-radar" class="tab-content active">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Detected Opportunities</h2>
+            <p class="section-sub">Scored and classified by problem severity, monetization velocity, and market readiness.</p>
+          </div>
+          <div class="sort-controls">
+            <label>Sort by:</label>
+            <select id="sortSelect" class="select-input-sm">
+              <option value="score">Highest Opportunity Score</option>
+              <option value="tam">Estimated Market Velocity</option>
+              <option value="date">Most Recent First</option>
+            </select>
+            <button id="exportOpportunitiesBtn" class="btn btn-sm btn-ghost" title="Export to JSON/CSV">📥 Export</button>
+          </div>
+        </div>
+
+        <div id="opportunitiesGrid" class="opportunities-grid">
+          <!-- Dynamically populated -->
+        </div>
+      </main>
+
+      <!-- TAB 2: Market Analytics & Sector Pulse -->
+      <main id="tab-analytics" class="tab-content" style="display: none;">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Market Pulse & Velocity Metrics</h2>
+            <p class="section-sub">Real-time aggregated breakdown across active opportunity signals.</p>
+          </div>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">High-Conviction Signals</div>
+            <div class="metric-val text-cyan" id="metricHighConviction">0</div>
+            <div class="metric-trend text-green">Score 85+</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Top Dominant Sector</div>
+            <div class="metric-val text-purple" id="metricTopSector">N/A</div>
+            <div class="metric-trend text-muted" id="metricTopSectorCount">0 Signals</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Leading Archetype</div>
+            <div class="metric-val text-amber" id="metricTopArchetype">N/A</div>
+            <div class="metric-trend text-muted">Most common model</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Total Articles Analyzed</div>
+            <div class="metric-val text-emerald" id="metricArticlesAnalyzed">0</div>
+            <div class="metric-trend text-cyan">Live Stream</div>
+          </div>
+        </div>
+
+        <div class="pulse-breakdown-container">
+          <div class="breakdown-card">
+            <h3>📈 Opportunities by Sector</h3>
+            <div id="sectorDistribution" class="distribution-bars"></div>
+          </div>
+          <div class="breakdown-card">
+            <h3>🏗️ Business Model Archetypes</h3>
+            <div id="archetypeDistribution" class="distribution-bars"></div>
+          </div>
+        </div>
+      </main>
+
+      <!-- TAB 3: Raw News Stream -->
+      <main id="tab-live-feed" class="tab-content" style="display: none;">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Aggregated News Pipeline</h2>
+            <p class="section-sub">Underlying news items ingested from global feeds and verified RSS sources.</p>
+          </div>
+        </div>
+        <div id="articlesList" class="articles-list">
+          <!-- Dynamically populated -->
+        </div>
+      </main>
+
+      <!-- TAB 4: Saved Blueprints -->
+      <main id="tab-saved" class="tab-content" style="display: none;">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Saved Opportunity Blueprints</h2>
+            <p class="section-sub">Curated pitch summaries, execution roadmaps, and tracked startup ideas.</p>
+          </div>
+          <button id="clearSavedBtn" class="btn btn-sm btn-danger">Clear All Saved</button>
+        </div>
+        <div id="savedList" class="opportunities-grid">
+          <!-- Dynamically populated -->
+        </div>
+      </main>
+
+      <!-- Blueprint Modal -->
+      <div id="blueprintModal" class="modal-backdrop" style="display: none;">
+        <div class="modal-card">
+          <div class="modal-header">
+            <div class="modal-title-wrap">
+              <span class="modal-badge" id="modalBadge">B2B SaaS</span>
+              <h2 id="modalTitle">Opportunity Blueprint</h2>
+            </div>
+            <button id="closeModalBtn" class="btn-close">✕</button>
+          </div>
+          <div class="modal-body" id="modalBody">
+            <!-- Dynamically populated -->
+          </div>
+          <div class="modal-footer">
+            <button id="modalSaveBtn" class="btn btn-primary">⭐ Bookmark Blueprint</button>
+            <button id="modalCopyMarkdownBtn" class="btn btn-secondary">📋 Copy Pitch (Markdown)</button>
+            <button id="modalCloseBtn2" class="btn btn-ghost">Close</button>
+          </div>
         </div>
       </div>
 
-      <div id="status" class="status"></div>
+      <!-- Settings / Configuration Modal -->
+      <div id="settingsModal" class="modal-backdrop" style="display: none;">
+        <div class="modal-card modal-sm">
+          <div class="modal-header">
+            <h2>⚙️ Feed & API Configuration</h2>
+            <button id="closeSettingsBtn" class="btn-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Data Ingestion Strategy</label>
+              <select id="feedStrategySelect" class="select-input">
+                <option value="hybrid">Hybrid (Live Direct RSS + Built-in Feeds) [Recommended]</option>
+                <option value="newsapi">NewsAPI.org Key (Optional Extended)</option>
+                <option value="curated">Curated Tech & Business RSS Only</option>
+              </select>
+            </div>
 
-      <div id="results" class="results">
-        <div id="opportunities" class="opportunities-section">
-          <h2>💼 Business Opportunities</h2>
-          <div id="opportunitiesList" class="opportunities-list"></div>
-        </div>
-        
-        <div id="newsArticles" class="news-section">
-          <h2>📰 Recent News</h2>
-          <div id="articlesList" class="articles-list"></div>
+            <div class="form-group" id="newsApiKeyWrap">
+              <label>NewsAPI.org Key (Optional)</label>
+              <input type="text" id="newsApiKeyInput" placeholder="e.g. 4a8b7c..." class="text-input" />
+              <small class="text-muted">Not required for live operation. Provides additional international query endpoints.</small>
+            </div>
+
+            <div class="form-group">
+              <label>Opportunity Detection Sensitivity</label>
+              <input type="range" id="sensitivitySlider" min="1" max="5" value="2" class="range-slider" />
+              <div class="range-labels">
+                <span>Broad (More Signals)</span>
+                <span id="sensitivityVal">Normal (Balanced)</span>
+                <span>Strict (High-Conviction Only)</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="saveSettingsBtn" class="btn btn-primary">Save Preferences</button>
+          </div>
         </div>
       </div>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <p>OpportunityRadar • Engineered for High-Velocity Market Intelligence • <span class="text-muted">Zero-Key Ingestion Enabled</span></p>
+      </footer>
     </div>
 
     <script src="src/main.js"></script>
