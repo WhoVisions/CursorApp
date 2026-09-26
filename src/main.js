@@ -1,6 +1,6 @@
 /**
- * OpportunityRadar v2.0
- * Autonomous Market Signal & Business Opportunity Intelligence Engine
+ * OpportunityRadar Ultra v2.5
+ * Top 0.001% Autonomous Market Signal & Business Opportunity Engine
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabContents = document.querySelectorAll('.tab-content');
   
   const opportunitiesGrid = document.getElementById('opportunitiesGrid');
+  const matrixTableBody = document.getElementById('matrixTableBody');
   const articlesList = document.getElementById('articlesList');
   const savedList = document.getElementById('savedList');
   const radarCount = document.getElementById('radarCount');
@@ -44,7 +45,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const sensitivitySlider = document.getElementById('sensitivitySlider');
   const sensitivityVal = document.getElementById('sensitivityVal');
   const exportOpportunitiesBtn = document.getElementById('exportOpportunitiesBtn');
+  const exportCsvBtn = document.getElementById('exportCsvBtn');
   const clearSavedBtn = document.getElementById('clearSavedBtn');
+
+  // ROI Simulator Elements
+  const roiSimBtn = document.getElementById('roiSimBtn');
+  const roiModal = document.getElementById('roiModal');
+  const closeRoiModalBtn = document.getElementById('closeRoiModalBtn');
+  const closeRoiModalBtn2 = document.getElementById('closeRoiModalBtn2');
+  const roiPriceSlider = document.getElementById('roiPriceSlider');
+  const roiPriceLabel = document.getElementById('roiPriceLabel');
+  const roiClientsSlider = document.getElementById('roiClientsSlider');
+  const roiClientsLabel = document.getElementById('roiClientsLabel');
+  const roiChurnSlider = document.getElementById('roiChurnSlider');
+  const roiChurnLabel = document.getElementById('roiChurnLabel');
+  const simulatedMrr = document.getElementById('simulatedMrr');
+  const simulatedArr = document.getElementById('simulatedArr');
 
   // Application State
   let rawArticles = [];
@@ -66,40 +82,40 @@ document.addEventListener('DOMContentLoaded', () => {
   // Opportunity Taxonomy & Heuristics
   const SIGNAL_PATTERNS = {
     ai_workflow: {
-      keywords: ['ai agent', 'autonomous', 'llm', 'workflow', 'prompt', 'synthetic', 'reasoning model', 'copilot', 'automation'],
+      keywords: ['ai agent', 'autonomous', 'llm', 'workflow', 'prompt', 'synthetic', 'reasoning model', 'copilot', 'automation', 'fine-tuning', 'rag'],
       archetype: 'AI Workflow',
       sector: 'Artificial Intelligence',
-      baseTam: '$14.2B'
+      baseTam: '$18.4B'
     },
     b2b_saas: {
-      keywords: ['platform', 'b2b', 'enterprise', 'dashboard', 'api', 'infrastructure', 'developer tool', 'analytics', 'saas'],
+      keywords: ['platform', 'b2b', 'enterprise', 'dashboard', 'api', 'infrastructure', 'developer tool', 'analytics', 'saas', 'cloud'],
       archetype: 'B2B SaaS',
       sector: 'Cloud & Enterprise',
-      baseTam: '$28.5B'
+      baseTam: '$34.2B'
     },
     arbitrage_supply: {
-      keywords: ['shortage', 'bottleneck', 'supply chain', 'freight', 'procurement', 'tariffs', 'logistics', 'inventory gap'],
+      keywords: ['shortage', 'bottleneck', 'supply chain', 'freight', 'procurement', 'tariffs', 'logistics', 'inventory gap', 'lead time'],
       archetype: 'Arbitrage & Supply',
       sector: 'Supply & Logistics',
-      baseTam: '$45.0B'
+      baseTam: '$52.0B'
     },
     regulatory_tech: {
-      keywords: ['regulation', 'compliance', 'sec filing', 'gdpr', 'ftc mandate', 'antitrust', 'audit', 'legislation', 'law'],
+      keywords: ['regulation', 'compliance', 'sec filing', 'gdpr', 'ftc mandate', 'antitrust', 'audit', 'legislation', 'law', 'eu ai act'],
       archetype: 'Regulatory Tech',
       sector: 'Gov & Compliance',
-      baseTam: '$9.8B'
+      baseTam: '$12.5B'
     },
     consumer_product: {
-      keywords: ['consumer trend', 'gen z', 'subscription', 'creator economy', 'viral', 'lifestyle', 'd2c', 'wellness'],
+      keywords: ['consumer trend', 'gen z', 'subscription', 'creator economy', 'viral', 'lifestyle', 'd2c', 'wellness', 'merch'],
       archetype: 'Consumer Product',
       sector: 'Consumer & Retail',
-      baseTam: '$18.0B'
+      baseTam: '$22.0B'
     },
     service_agency: {
-      keywords: ['consulting', 'advisory', 'fractional', 'talent shortage', 'migration service', 'implementation partner'],
+      keywords: ['consulting', 'advisory', 'fractional', 'talent shortage', 'migration service', 'implementation partner', 'retainer'],
       archetype: 'Service Agency',
       sector: 'Professional Services',
-      baseTam: '$6.5B'
+      baseTam: '$8.5B'
     }
   };
 
@@ -164,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sensitivitySlider.value = settings.sensitivity;
     updateSensitivityLabel(settings.sensitivity);
     updateSavedCount();
+    calculateSimulatedRoi();
     
     // Auto-run initial baseline scan
     executeScan();
@@ -219,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         tabContents.forEach(tc => {
           if (tc.id === `tab-${targetTab}`) {
-            tc.style.display = tc.id === 'tab-radar' || tc.id === 'tab-saved' ? 'block' : 'block';
+            tc.style.display = 'block';
             tc.classList.add('active');
           } else {
             tc.style.display = 'none';
@@ -227,7 +244,9 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
 
-        if (targetTab === 'analytics') {
+        if (targetTab === 'comparator') {
+          renderMatrixTable();
+        } else if (targetTab === 'analytics') {
           renderAnalytics();
         } else if (targetTab === 'saved') {
           renderSavedList();
@@ -236,12 +255,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Quick Settings Modal
-    quickSettingsBtn.addEventListener('click', () => {
-      settingsModal.style.display = 'flex';
-    });
-    closeSettingsBtn.addEventListener('click', () => {
-      settingsModal.style.display = 'none';
-    });
+    quickSettingsBtn.addEventListener('click', () => { settingsModal.style.display = 'flex'; });
+    closeSettingsBtn.addEventListener('click', () => { settingsModal.style.display = 'none'; });
     saveSettingsBtn.addEventListener('click', () => {
       settings.apiKey = newsApiKeyInput.value.trim();
       settings.strategy = feedStrategySelect.value;
@@ -252,12 +267,30 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('opportunitySensitivity', settings.sensitivity.toString());
       
       settingsModal.style.display = 'none';
-      showStatus('Settings saved successfully! Running refreshed scan...', 'success');
+      showStatus('Settings saved! Running refreshed multi-lane scan...', 'success');
       executeScan();
     });
 
     sensitivitySlider.addEventListener('input', (e) => {
       updateSensitivityLabel(parseInt(e.target.value, 10));
+    });
+
+    // ROI Simulator Modal Handlers
+    roiSimBtn.addEventListener('click', () => { roiModal.style.display = 'flex'; });
+    closeRoiModalBtn.addEventListener('click', () => { roiModal.style.display = 'none'; });
+    closeRoiModalBtn2.addEventListener('click', () => { roiModal.style.display = 'none'; });
+
+    roiPriceSlider.addEventListener('input', (e) => {
+      roiPriceLabel.textContent = `$${parseInt(e.target.value, 10).toLocaleString()}`;
+      calculateSimulatedRoi();
+    });
+    roiClientsSlider.addEventListener('input', (e) => {
+      roiClientsLabel.textContent = `${e.target.value} Clients`;
+      calculateSimulatedRoi();
+    });
+    roiChurnSlider.addEventListener('input', (e) => {
+      roiChurnLabel.textContent = `${e.target.value}%`;
+      calculateSimulatedRoi();
     });
 
     // Blueprint Modal
@@ -268,6 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Export & Clear Saved
     exportOpportunitiesBtn.addEventListener('click', exportOpportunitiesJson);
+    exportCsvBtn.addEventListener('click', exportOpportunitiesCsv);
     clearSavedBtn.addEventListener('click', () => {
       if (confirm('Clear all bookmarked blueprints?')) {
         savedBlueprints = [];
@@ -279,14 +313,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function updateSensitivityLabel(val) {
-    if (val === 1) sensitivityVal.textContent = 'Broad (Score 50+)';
-    else if (val === 2) sensitivityVal.textContent = 'Normal (Score 65+)';
-    else if (val === 3) sensitivityVal.textContent = 'Strict (Score 75+)';
-    else if (val >= 4) sensitivityVal.textContent = 'Ultra-High Conviction (Score 85+)';
+  function calculateSimulatedRoi() {
+    const price = parseInt(roiPriceSlider.value, 10);
+    const clients = parseInt(roiClientsSlider.value, 10);
+    const churn = parseFloat(roiChurnSlider.value) / 100;
+    
+    // Effective revenue factoring monthly churn over 12 months
+    const retentionFactor = Math.max(0.7, 1 - (churn * 3));
+    const mrr = Math.round(price * clients * retentionFactor);
+    const arr = mrr * 12;
+
+    simulatedMrr.textContent = `$${mrr.toLocaleString()}`;
+    simulatedArr.textContent = `$${arr.toLocaleString()}`;
   }
 
-  // --- Live Feed Ingestion Engine ---
+  function updateSensitivityLabel(val) {
+    if (val === 1) sensitivityVal.textContent = 'Broad (50+)';
+    else if (val === 2) sensitivityVal.textContent = 'Normal (65+)';
+    else if (val === 3) sensitivityVal.textContent = 'Strict (75+)';
+    else if (val >= 4) sensitivityVal.textContent = 'Ultra (85+)';
+  }
+
+  // --- Live Multi-Lane Ingestion Engine ---
   async function executeScan() {
     setScanningState(true);
     showStatus('Ingesting live news feeds & scanning market signals...', 'info');
@@ -315,9 +363,9 @@ document.addEventListener('DOMContentLoaded', () => {
   async function fetchAllFeeds() {
     const articles = [];
 
-    // Strategy 1: Hacker News High-Signal Story Fetch
+    // Lane 1: Hacker News High-Signal Frontpage API
     try {
-      const hnRes = await fetch('https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=25');
+      const hnRes = await fetch('https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=30');
       if (hnRes.ok) {
         const hnData = await hnRes.json();
         if (hnData.hits) {
@@ -325,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (hit.title && (hit.url || hit.story_text)) {
               articles.push({
                 title: hit.title,
-                description: hit.story_text ? hit.story_text.slice(0, 200) : `HN community discussion on ${hit.title} with ${hit.points || 0} upvotes and ${hit.num_comments || 0} comments.`,
+                description: hit.story_text ? hit.story_text.slice(0, 220) : `HN signal on ${hit.title} with ${hit.points || 0} upvotes and ${hit.num_comments || 0} discussion comments.`,
                 source: { name: 'Hacker News Frontpage' },
                 publishedAt: hit.created_at || new Date().toISOString(),
                 url: hit.url || `https://news.ycombinator.com/item?id=${hit.objectID}`,
@@ -339,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.warn('HN fetch skipped:', e.message);
     }
 
-    // Strategy 2: NewsAPI if configured
+    // Lane 2: Optional NewsAPI Endpoint
     if (settings.apiKey && (settings.strategy === 'hybrid' || settings.strategy === 'newsapi')) {
       try {
         const apiUrl = `https://newsapi.org/v2/top-headlines?category=business&language=en&pageSize=20&apiKey=${settings.apiKey}`;
@@ -373,13 +421,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Opportunity Synthesis & AI Blueprint Engine ---
   function analyzeAndSynthesize(articles) {
     const opportunities = [];
-    const minThreshold = settings.sensitivity === 1 ? 40 : settings.sensitivity === 2 ? 55 : settings.sensitivity === 3 ? 70 : 80;
+    const minThreshold = settings.sensitivity === 1 ? 45 : settings.sensitivity === 2 ? 60 : settings.sensitivity === 3 ? 75 : 85;
 
     articles.forEach((art, idx) => {
       const fullText = `${art.title} ${art.description || ''}`.toLowerCase();
       let matchedPattern = null;
       let matchedKeywords = [];
-      let score = 50;
+      let score = 52;
 
       // Classify Archetype & Sector
       for (const [key, pat] of Object.entries(SIGNAL_PATTERNS)) {
@@ -395,12 +443,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Compute Opportunity Potency Score
-      score += matchedKeywords.length * 12;
-      if (art.title.includes('Surges') || art.title.includes('Mandate') || art.title.includes('Bottleneck') || art.title.includes('Demand') || art.title.includes('Deadlines')) {
+      score += matchedKeywords.length * 10;
+      if (art.title.includes('Surges') || art.title.includes('Mandate') || art.title.includes('Bottleneck') || art.title.includes('Demand') || art.title.includes('Deadlines') || art.title.includes('Adoption')) {
         score += 15;
       }
       if (art.description && art.description.length > 80) score += 5;
-      score = Math.min(score, 98);
+      score = Math.min(score, 99);
 
       if (score >= minThreshold) {
         const oppId = `opp-${idx}-${Date.now().toString(36)}`;
@@ -423,7 +471,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Sort by default score
     return opportunities.sort((a, b) => b.score - a.score);
   }
 
@@ -464,6 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Rendering Functions ---
   function renderAllViews() {
     renderOpportunityCards();
+    renderMatrixTable();
     renderRawArticles();
   }
 
@@ -549,8 +597,38 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }).join('');
 
-    // Attach card event listeners
-    document.querySelectorAll('.btn-open-blueprint').forEach(btn => {
+    attachCardListeners(opportunitiesGrid);
+  }
+
+  function renderMatrixTable() {
+    const filtered = getFilteredOpportunities();
+    if (!matrixTableBody) return;
+
+    if (filtered.length === 0) {
+      matrixTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted);">No signals match current filters.</td></tr>`;
+      return;
+    }
+
+    matrixTableBody.innerHTML = filtered.map(opp => `
+      <tr>
+        <td style="font-weight:700; color:var(--text-primary); max-width:240px;">${escapeHtml(opp.title)}</td>
+        <td><span class="badge badge-purple">${opp.archetype}</span></td>
+        <td>${escapeHtml(opp.sector)}</td>
+        <td style="font-family:var(--font-mono); color:var(--cyan-400); font-weight:700;">${opp.score}</td>
+        <td style="max-width:200px;">${escapeHtml(opp.blueprint.targetCustomer)}</td>
+        <td style="font-family:var(--font-mono);">${opp.tam}</td>
+        <td style="font-size:0.8rem; color:var(--emerald-400);">${escapeHtml(opp.blueprint.monetization)}</td>
+        <td>
+          <button class="btn btn-sm btn-secondary btn-open-blueprint" data-id="${opp.id}">Inspect 🚀</button>
+        </td>
+      </tr>
+    `).join('');
+
+    attachCardListeners(matrixTableBody);
+  }
+
+  function attachCardListeners(container) {
+    container.querySelectorAll('.btn-open-blueprint').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = e.target.dataset.id;
         const opp = detectedOpportunities.find(o => o.id === id) || savedBlueprints.find(o => o.id === id);
@@ -558,7 +636,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    document.querySelectorAll('.btn-bookmark').forEach(btn => {
+    container.querySelectorAll('.btn-bookmark').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = e.target.dataset.id;
         const opp = detectedOpportunities.find(o => o.id === id);
@@ -614,7 +692,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('metricTopArchetype').textContent = topArchetype[0];
     }
 
-    // Render Distribution Bars
     renderDistribution('sectorDistribution', sectorCounts, opps.length);
     renderDistribution('archetypeDistribution', archetypeCounts, opps.length);
   }
@@ -683,21 +760,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `).join('');
 
-    savedList.querySelectorAll('.btn-open-blueprint').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const id = e.target.dataset.id;
-        const opp = savedBlueprints.find(o => o.id === id);
-        if (opp) openBlueprintModal(opp);
-      });
-    });
-
-    savedList.querySelectorAll('.btn-bookmark').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const id = e.target.dataset.id;
-        const opp = savedBlueprints.find(o => o.id === id);
-        if (opp) toggleSaveBlueprint(opp);
-      });
-    });
+    attachCardListeners(savedList);
   }
 
   // --- Modal & Blueprint Handlers ---
@@ -787,7 +850,7 @@ ${opp.problemStatement}
 ${opp.blueprint.roadmap.map((s, i) => `${i+1}. ${s}`).join('\n')}
 
 ---
-*Generated by OpportunityRadar • Grounded on ${opp.rawArticle.title} (${opp.rawArticle.source.name})*
+*Generated by OpportunityRadar Ultra • Grounded on ${opp.rawArticle.title} (${opp.rawArticle.source.name})*
 `;
 
     navigator.clipboard.writeText(md).then(() => {
@@ -800,13 +863,36 @@ ${opp.blueprint.roadmap.map((s, i) => `${i+1}. ${s}`).join('\n')}
   function exportOpportunitiesJson() {
     const filtered = getFilteredOpportunities();
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(filtered, null, 2));
+    downloadFile(dataStr, `opportunity_radar_export_${new Date().toISOString().slice(0,10)}.json`);
+    showStatus(`Exported ${filtered.length} opportunities to JSON!`, 'success');
+  }
+
+  function exportOpportunitiesCsv() {
+    const filtered = getFilteredOpportunities();
+    const headers = ['Title', 'Archetype', 'Sector', 'Score', 'TAM', 'Target Buyer', 'Monetization', 'Source'];
+    const rows = filtered.map(o => [
+      `"${o.title.replace(/"/g, '""')}"`,
+      `"${o.archetype}"`,
+      `"${o.sector}"`,
+      o.score,
+      `"${o.tam}"`,
+      `"${o.blueprint.targetCustomer.replace(/"/g, '""')}"`,
+      `"${o.blueprint.monetization.replace(/"/g, '""')}"`,
+      `"${(o.rawArticle.source.name || '').replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    downloadFile(csvContent, `opportunity_radar_matrix_${new Date().toISOString().slice(0,10)}.csv`);
+    showStatus(`Exported ${filtered.length} opportunities to CSV!`, 'success');
+  }
+
+  function downloadFile(content, fileName) {
     const dlAnchor = document.createElement('a');
-    dlAnchor.setAttribute("href", dataStr);
-    dlAnchor.setAttribute("download", `opportunity_radar_export_${new Date().toISOString().slice(0,10)}.json`);
+    dlAnchor.setAttribute("href", content);
+    dlAnchor.setAttribute("download", fileName);
     document.body.appendChild(dlAnchor);
     dlAnchor.click();
     dlAnchor.remove();
-    showStatus(`Exported ${filtered.length} opportunities to JSON!`, 'success');
   }
 
   function updateSavedCount() {

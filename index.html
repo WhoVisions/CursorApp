@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>OpportunityRadar — AI & News Business Opportunity Scanner</title>
-    <meta name="description" content="Scan multi-source news, market signals, and industry breakthroughs to discover actionable business opportunities." />
+    <title>OpportunityRadar Ultra — Autonomous Market Signal & Business Opportunity Engine</title>
+    <meta name="description" content="Top 0.001% autonomous market signal intelligence, monetization blueprint synthesis, and execution roadmaps." />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
@@ -21,18 +21,19 @@
           <div>
             <div class="brand-title">
               <h1>Opportunity<span class="gradient-text">Radar</span></h1>
-              <span class="badge badge-pulse">v2.0 Pro</span>
+              <span class="badge badge-pulse">v2.5 Ultra</span>
             </div>
-            <p class="tagline">Autonomous Market Signal & Business Opportunity Intelligence Engine</p>
+            <p class="tagline">Top 0.001% Autonomous Market Signal & Monetization Intelligence Engine</p>
           </div>
         </div>
 
         <div class="header-actions">
-          <div class="source-status-pill" id="sourceStatusPill" title="Feed Source Connection">
+          <div class="source-status-pill" id="sourceStatusPill" title="Multi-Lane RSS & Signal Ingestion">
             <span class="status-dot online"></span>
-            <span id="sourceStatusText">Live Feed Online (Zero Key Req.)</span>
+            <span id="sourceStatusText">Multi-Lane Ingestion Online</span>
           </div>
-          <button id="quickSettingsBtn" class="btn btn-icon" title="Configure API Keys & Feeds">⚙️</button>
+          <button id="roiSimBtn" class="btn btn-secondary btn-sm" title="Launch Interactive Financial ROI Simulator">🧮 ROI Simulator</button>
+          <button id="quickSettingsBtn" class="btn btn-icon" title="Configure API Keys & Ingestion Strategy">⚙️</button>
         </div>
       </header>
 
@@ -41,11 +42,14 @@
         <button class="tab-btn active" data-tab="radar">
           <span class="tab-icon">🎯</span> Opportunity Radar <span class="tab-counter" id="radarCount">0</span>
         </button>
+        <button class="tab-btn" data-tab="comparator">
+          <span class="tab-icon">⚖️</span> Opportunity Matrix
+        </button>
         <button class="tab-btn" data-tab="analytics">
           <span class="tab-icon">📊</span> Market Pulse
         </button>
         <button class="tab-btn" data-tab="live-feed">
-          <span class="tab-icon">📰</span> Raw News Feed <span class="tab-counter" id="articlesCount">0</span>
+          <span class="tab-icon">📰</span> Raw News Pipeline <span class="tab-counter" id="articlesCount">0</span>
         </button>
         <button class="tab-btn" data-tab="saved">
           <span class="tab-icon">⭐</span> Saved Blueprints <span class="tab-counter" id="savedCount">0</span>
@@ -59,7 +63,7 @@
           <input 
             type="text" 
             id="searchInput" 
-            placeholder="Search signals by keyword, sector (AI, Energy, Health, Fintech), or business model..." 
+            placeholder="Search signals by keyword, sector (AI Agents, Energy, Biotech, Fintech), or archetype..." 
           />
           <button id="clearSearch" class="btn-clear" style="display: none;">✕</button>
         </div>
@@ -80,12 +84,12 @@
             <label class="section-label">Archetype:</label>
             <select id="archetypeFilter" class="select-input">
               <option value="all">All Archetypes</option>
-              <option value="B2B SaaS">B2B SaaS / Tooling</option>
-              <option value="AI Workflow">AI Workflow / Agents</option>
+              <option value="AI Workflow">AI Workflow / Autonomous Agents</option>
+              <option value="B2B SaaS">B2B SaaS / Infrastructure</option>
               <option value="Arbitrage & Supply">Arbitrage & Supply Chain</option>
-              <option value="Regulatory Tech">Regulatory & Compliance</option>
-              <option value="Consumer Product">Consumer & Creator Economy</option>
-              <option value="Service Agency">High-Ticket Agency / Consulting</option>
+              <option value="Regulatory Tech">Regulatory Tech & Compliance</option>
+              <option value="Consumer Product">Consumer & Creator Platforms</option>
+              <option value="Service Agency">High-Ticket Productized Agency</option>
             </select>
           </div>
 
@@ -117,7 +121,8 @@
               <option value="tam">Estimated Market Velocity</option>
               <option value="date">Most Recent First</option>
             </select>
-            <button id="exportOpportunitiesBtn" class="btn btn-sm btn-ghost" title="Export to JSON/CSV">📥 Export</button>
+            <button id="exportOpportunitiesBtn" class="btn btn-sm btn-ghost" title="Export to JSON">📥 Export JSON</button>
+            <button id="exportCsvBtn" class="btn btn-sm btn-ghost" title="Export to CSV">📊 Export CSV</button>
           </div>
         </div>
 
@@ -126,7 +131,36 @@
         </div>
       </main>
 
-      <!-- TAB 2: Market Analytics & Sector Pulse -->
+      <!-- TAB 2: Opportunity Comparison Matrix -->
+      <main id="tab-comparator" class="tab-content" style="display: none;">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Opportunity Matrix & Comparator</h2>
+            <p class="section-sub">Side-by-side architectural comparison across top high-conviction signals.</p>
+          </div>
+        </div>
+        <div class="matrix-table-container">
+          <table class="matrix-table" id="matrixTable">
+            <thead>
+              <tr>
+                <th>Opportunity Title</th>
+                <th>Archetype</th>
+                <th>Sector</th>
+                <th>Potency Score</th>
+                <th>Target ICP</th>
+                <th>Estimated TAM</th>
+                <th>Monetization Model</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="matrixTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </main>
+
+      <!-- TAB 3: Market Analytics & Sector Pulse -->
       <main id="tab-analytics" class="tab-content" style="display: none;">
         <div class="section-header">
           <div>
@@ -154,7 +188,7 @@
           <div class="metric-card">
             <div class="metric-label">Total Articles Analyzed</div>
             <div class="metric-val text-emerald" id="metricArticlesAnalyzed">0</div>
-            <div class="metric-trend text-cyan">Live Stream</div>
+            <div class="metric-trend text-cyan">Live Multi-Lane Stream</div>
           </div>
         </div>
 
@@ -170,7 +204,7 @@
         </div>
       </main>
 
-      <!-- TAB 3: Raw News Stream -->
+      <!-- TAB 4: Raw News Pipeline -->
       <main id="tab-live-feed" class="tab-content" style="display: none;">
         <div class="section-header">
           <div>
@@ -183,7 +217,7 @@
         </div>
       </main>
 
-      <!-- TAB 4: Saved Blueprints -->
+      <!-- TAB 5: Saved Blueprints -->
       <main id="tab-saved" class="tab-content" style="display: none;">
         <div class="section-header">
           <div>
@@ -218,6 +252,51 @@
         </div>
       </div>
 
+      <!-- ROI Simulator Modal -->
+      <div id="roiModal" class="modal-backdrop" style="display: none;">
+        <div class="modal-card modal-md">
+          <div class="modal-header">
+            <div class="modal-title-wrap">
+              <span class="modal-badge">Financial Engineering</span>
+              <h2>🧮 12-Month SaaS / Agency ROI Simulator</h2>
+            </div>
+            <button id="closeRoiModalBtn" class="btn-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Monthly Subscription / Retainer Price ($): <strong id="roiPriceLabel" class="text-cyan">$499</strong></label>
+              <input type="range" id="roiPriceSlider" min="49" max="5000" step="50" value="499" class="range-slider" />
+            </div>
+
+            <div class="form-group">
+              <label>Estimated Month-12 Active Clients: <strong id="roiClientsLabel" class="text-purple">25 Clients</strong></label>
+              <input type="range" id="roiClientsSlider" min="5" max="250" step="5" value="25" class="range-slider" />
+            </div>
+
+            <div class="form-group">
+              <label>Monthly Gross Churn Rate (%): <strong id="roiChurnLabel" class="text-amber">4%</strong></label>
+              <input type="range" id="roiChurnSlider" min="1" max="15" step="0.5" value="4" class="range-slider" />
+            </div>
+
+            <div class="metrics-grid" style="margin-top: 10px;">
+              <div class="metric-card">
+                <div class="metric-label">Estimated MRR (Month 12)</div>
+                <div class="metric-val text-cyan" id="simulatedMrr">$12,475</div>
+                <div class="metric-trend text-green">Monthly Recurring</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-label">Projected Annual Run-Rate (ARR)</div>
+                <div class="metric-val text-emerald" id="simulatedArr">$149,700</div>
+                <div class="metric-trend text-green">Annualized Gross</div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="closeRoiModalBtn2" class="btn btn-primary">Done</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Settings / Configuration Modal -->
       <div id="settingsModal" class="modal-backdrop" style="display: none;">
         <div class="modal-card modal-sm">
@@ -229,9 +308,9 @@
             <div class="form-group">
               <label>Data Ingestion Strategy</label>
               <select id="feedStrategySelect" class="select-input">
-                <option value="hybrid">Hybrid (Live Direct RSS + Built-in Feeds) [Recommended]</option>
+                <option value="hybrid">Multi-Lane Hybrid (HN API + Tech Feeds + Public RSS) [Optimal]</option>
                 <option value="newsapi">NewsAPI.org Key (Optional Extended)</option>
-                <option value="curated">Curated Tech & Business RSS Only</option>
+                <option value="curated">Curated High-Signal RSS Only</option>
               </select>
             </div>
 
@@ -243,11 +322,11 @@
 
             <div class="form-group">
               <label>Opportunity Detection Sensitivity</label>
-              <input type="range" id="sensitivitySlider" min="1" max="5" value="2" class="range-slider" />
+              <input type="range" id="sensitivitySlider" min="1" max="4" value="2" class="range-slider" />
               <div class="range-labels">
-                <span>Broad (More Signals)</span>
-                <span id="sensitivityVal">Normal (Balanced)</span>
-                <span>Strict (High-Conviction Only)</span>
+                <span>Broad (50+)</span>
+                <span id="sensitivityVal">Normal (65+)</span>
+                <span>Strict (80+)</span>
               </div>
             </div>
           </div>
@@ -259,7 +338,7 @@
 
       <!-- Footer -->
       <footer class="app-footer">
-        <p>OpportunityRadar • Engineered for High-Velocity Market Intelligence • <span class="text-muted">Zero-Key Ingestion Enabled</span></p>
+        <p>OpportunityRadar Ultra • Engineered for Top 0.001% Autonomous Market Signal Synthesis • <span class="text-muted">Zero-Key Ingestion Active</span></p>
       </footer>
     </div>
 
