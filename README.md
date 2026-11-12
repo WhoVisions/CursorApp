@@ -42,3 +42,16 @@ start http://localhost:5000
 ## Notes
 
 This is a lightweight scaffold. If you want a full framework (React/Vite/Next) I can add that next.
+
+<!-- nougen:fleet-role:begin (generated from NouGenRelay fleet/manifest.json; edit the manifest, not this block) -->
+## Fleet role
+
+| | |
+|---|---|
+| Role | Frontend + backend integration for the WhoVisions Cursor 2.0 assistant. Built in React, styled with Tailwind, powered by Netlify Functions and Cloudinary APIs. |
+| Kind | genesis_domain |
+| Status | canonical |
+| Canonical for | cursorapp |
+| Visibility | public |
+
+<!-- nougen:fleet-role:end -->
